@@ -45,7 +45,8 @@ if __name__ == "__main__":
         img_converted.save(filename = f'{outputdir}/{basename}')
         pprint(vars(img_converted))
         num_imgs = len(img_converted.sequence)
-        makeCmdi(f,num_imgs)
+        stderr(makeCmdi(f,num_imgs))
+        exit(1)
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 

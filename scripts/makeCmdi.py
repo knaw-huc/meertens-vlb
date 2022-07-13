@@ -27,10 +27,34 @@ def getHeader():
 '''
 
 def getResources(base_name, number):
-    pass
+    resources = '''    <cmd:Resources>
+        <cmd:ResourceProxyList>
+'''
+    resources += f'''            <cmd:ResourceProxy id="s">
+                <cmd:ResourceType>Resource</cmd:ResourceType>
+                <cmd:ResourceRef>/IN/{base_name}</cmd:ResourceRef>
+            </cmd:ResourceProxy>
+'''
+    path = os.path.dirname(base_name)
+    file_name = os.path.basename(base_name)
+    name = re.search(r'(^[^.]*).', file_name).group(1)
+    # basename zonder ext met .jpg
+    # {name}-{num}.jpg
+    for num in range(number):
+        resources += f'''            <cmd:ResourceProxy id="p{num+1}">
+                <cmd:ResourceType>Resource</cmd:ResourceType>
+                <cmd:ResourceRef>/OUT/{path}_split/{name}-{num}.jpg</cmd:ResourceRef>
+            </cmd:ResourceProxy>
+'''
+    resources += '''        </cmd:ResourceProxyList>
+        <cmd:JournalFileProxyList/>
+        <cmd:ResourceRelationList/>
+    </cmd:Resources>
+'''
+    return resources
 
 def getComponents(base_name, number):
-    pass
+    return ''
 
 def getFooter():
     return '</cmd:CMD>'
@@ -38,28 +62,9 @@ def getFooter():
 def makeCmdi(base_name, number):
     stderr(base_name)
     stderr(number)
-    getHeader()
-    getResources(base_name, number)
-    getComponents(base_name, number)
-    getFooter()
-
-if __name__ == "__main__":
-    stderr(datetime.today().strftime("start: %H:%M:%S"))
-    args = arguments()
-    inputdir = args['inputdir']
-    outputdir = args['outputdir']
-    if not os.path.isdir(outputdir):
-        os.mkdir(outputdir)
-
-    allFiles = {}
-    all_files = glob.glob(inputdir + "/*.tif")
-    for f in all_files:
-        basename = os.path.basename(f)
-        stderr(basename)
-        ny = Image(filename = f)
-        ny_converted = ny.convert('jpg')
-        basename = basename.replace('.tif','.jpg')
-        ny_converted.save(filename = f'{outputdir}/{basename}')
-
-    stderr(datetime.today().strftime("einde: %H:%M:%S"))
+    result = getHeader()
+    result += getResources(base_name, number)
+    result += getComponents(base_name, number)
+    result += getFooter()
+    return result
 
