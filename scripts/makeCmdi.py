@@ -38,8 +38,6 @@ def getResources(base_name, number):
     path = os.path.dirname(base_name)
     file_name = os.path.basename(base_name)
     name = re.search(r'(^[^.]*).', file_name).group(1)
-    # basename zonder ext met .jpg
-    # {name}-{num}.jpg
     for num in range(number):
         resources += f'''            <cmd:ResourceProxy id="p{num+1}">
                 <cmd:ResourceType>Resource</cmd:ResourceType>
@@ -54,7 +52,30 @@ def getResources(base_name, number):
     return resources
 
 def getComponents(base_name, number):
-    return ''
+    path = os.path.dirname(base_name)
+    file_name = os.path.basename(base_name)
+    name = re.search(r'(^[^.]*).', file_name).group(1)
+    identifier = re.search(r'(^[^.]*).', file_name).group(1)
+    components = f'''    <cmd:Components>
+        <cmdp:Vragenlijst>
+            <cmdp:identifier>{path}<!-- directory --></cmdp:identifier>
+            <cmdp:aantalPaginas>{number}<!-- of 0 als we het niet weten--></cmdp:aantalPaginas>
+            <cmdp:Scan cmd:ref="s">
+                <cmdp:identifier>{name}<!-- filename zonder extension --></cmdp:identifier>
+                <cmdp:aantalPaginas>{number}</cmdp:aantalPaginas>
+'''
+    for num in range(number):
+        components += f'''                <cmdp:Pagina cmd:ref="p{num+1}">
+                    <cmdp:nr>{num+1}</cmdp:nr>
+                    <!--<cmdp:type>als verwacht</cmdp:type>-->
+                </cmdp:Pagina>
+'''
+
+    components += '''            </cmdp:Scan>
+        </cmdp:Vragenlijst>
+    </cmd:Components>
+'''
+    return components
 
 def getFooter():
     return '</cmd:CMD>'

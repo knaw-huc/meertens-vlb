@@ -9,7 +9,6 @@ from makeCmdi import makeCmdi
 import os
 import re
 import sys
-from pprint import pprint
 
 def stderr(text,nl='\n'):
     sys.stderr.write(f"{text}{nl}")
@@ -43,10 +42,8 @@ if __name__ == "__main__":
         img_converted = img.convert('jpg')
         basename = basename.replace('.tif','.jpg')
         img_converted.save(filename = f'{outputdir}/{basename}')
-        pprint(vars(img_converted))
         num_imgs = len(img_converted.sequence)
         stderr(makeCmdi(f,num_imgs))
-        exit(1)
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 
