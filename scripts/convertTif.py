@@ -5,18 +5,17 @@ import glob
 from wand.image import Image
 import locale
 locale.setlocale(locale.LC_ALL, 'nl_NL') 
+from makeCmdi import makeCmdi
 import os
 import re
 import sys
+from pprint import pprint
 
 def stderr(text,nl='\n'):
     sys.stderr.write(f"{text}{nl}")
 
 def arguments():
     ap = argparse.ArgumentParser(description='Convert multi page tif files into single page jpeg files"')
-    ap.add_argument('-i', '--inputfile',
-                    help="inputfile",
-                    default= "SWR2 Feature-2019-12-04.html")
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
                     default= "Scans_VKvragenlijst23")
@@ -40,10 +39,13 @@ if __name__ == "__main__":
     for f in all_files:
         basename = os.path.basename(f)
         stderr(basename)
-        ny = Image(filename = f)
-        ny_converted = ny.convert('jpg')
+        img = Image(filename = f)
+        img_converted = img.convert('jpg')
         basename = basename.replace('.tif','.jpg')
-        ny_converted.save(filename = f'{outputdir}/{basename}')
+        img_converted.save(filename = f'{outputdir}/{basename}')
+        pprint(vars(img_converted))
+        num_imgs = len(img_converted.sequence)
+        makeCmdi(f,num_imgs)
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 
