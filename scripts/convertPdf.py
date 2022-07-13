@@ -14,9 +14,6 @@ def stderr(text,nl='\n'):
 
 def arguments():
     ap = argparse.ArgumentParser(description='Convert multi page pdf's into single jpeg files and split the pages into left and right (if the page width is larger than the height)')
-    ap.add_argument('-i', '--inputfile',
-                    help="inputfile",
-                    default= "SWR2 Feature-2019-12-04.html")
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
                     default= "Scans_microfiches")
