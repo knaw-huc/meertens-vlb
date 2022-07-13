@@ -17,10 +17,10 @@ def arguments():
     ap = argparse.ArgumentParser(description='Convert multi page tif files into single page jpeg files"')
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
-                    default= "Scans_VKvragenlijst23")
+                    default= "VKvragenlijst23")
     ap.add_argument('-o', '--outputdir',
                     help="outputdir",
-                    default="Scans_VKvragenlijst23_split")
+                    default="VKvragenlijst23_split")
     args = vars(ap.parse_args())
     return args
 
@@ -37,13 +37,13 @@ if __name__ == "__main__":
     all_files = glob.glob(inputdir + "/*.tif")
     for f in all_files:
         basename = os.path.basename(f)
-        stderr(basename)
         img = Image(filename = f)
         img_converted = img.convert('jpg')
         basename = basename.replace('.tif','.jpg')
         img_converted.save(filename = f'{outputdir}/{basename}')
         num_imgs = len(img_converted.sequence)
-        stderr(makeCmdi(f,num_imgs))
+        with open(re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
+            uitvoer.write(makeCmdi(f,num_imgs))
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 

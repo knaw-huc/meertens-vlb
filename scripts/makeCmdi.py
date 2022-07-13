@@ -81,8 +81,6 @@ def getFooter():
     return '</cmd:CMD>'
 
 def makeCmdi(base_name, number):
-    stderr(base_name)
-    stderr(number)
     result = getHeader()
     result += getResources(base_name, number)
     result += getComponents(base_name, number)
