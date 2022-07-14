@@ -5,6 +5,7 @@ import glob
 from wand.image import Image
 import locale
 locale.setlocale(locale.LC_ALL, 'nl_NL') 
+from makeCmdi import makeCmdi
 import os
 import re
 import sys
@@ -13,13 +14,13 @@ def stderr(text,nl='\n'):
     sys.stderr.write(f"{text}{nl}")
 
 def arguments():
-    ap = argparse.ArgumentParser(description='Convert multi page pdf's into single jpeg files and split the pages into left and right (if the page width is larger than the height)')
+    ap = argparse.ArgumentParser(description="Convert multi page pdf's into single jpeg files and split the pages into left and right (if the page width is larger than the height)")
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
-                    default= "Scans_microfiches")
+                    default= "N7")
     ap.add_argument('-o', '--outputdir',
                     help="outputdir",
-                    default="Scans_microfiches_split")
+                    default="N7")
     args = vars(ap.parse_args())
     return args
 
@@ -40,31 +41,35 @@ if __name__ == "__main__":
     for f in all_files:
         basename = os.path.basename(f)
         stderr(basename)
-        ny = Image(filename = f)
-        ny_converted = ny.convert('jpg')
+        img = Image(filename = f)
+        img_converted = img.convert('jpg')
         basename = basename.replace('.pdf','.jpg')
-        ny_converted.save(filename = f'{outputdir}/{basename}')
+        img_converted.save(filename = f'{outputdir}/{basename}')
+        num_imgs = len(img_converted.sequence)
+        with open(re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
+            uitvoer.write(makeCmdi(f,num_imgs))
+
 
 
     all_files = glob.glob(outputdir + "/*.jpg")
     for f in all_files:
         stderr(f)
-        ny = Image(filename = f)
-        if ny.height>ny.width:
+        img = Image(filename = f)
+        if img.height>img.width:
             stderr(f'{f} is single page?')
             continue
-        half = int(ny.width / 2)
-        ny.crop(0, 0, half, ny.height)
+        half = int(img.width / 2)
+        img.crop(0, 0, half, img.height)
         fileout = f.replace('.jpg','_links.jpg')
         fileout = fileout.replace(outputdir,outdirlr)
-        ny.save(filename = fileout)
+        img.save(filename = fileout)
         #
-        ny = Image(filename = f)
-        half = int(ny.width / 2)
-        ny.crop(half+1, 0, ny.width, ny.height)
+        img = Image(filename = f)
+        half = int(img.width / 2)
+        img.crop(half+1, 0, img.width, img.height)
         fileout = f.replace('.jpg','_rechts.jpg')
         fileout = fileout.replace(outputdir,outdirlr)
-        ny.save(filename = fileout)
+        img.save(filename = fileout)
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 
