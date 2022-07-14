@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import argparse
-from datetime import datetime
-import glob
 from wand.image import Image
 import locale
 locale.setlocale(locale.LC_ALL, 'nl_NL') 
@@ -40,10 +37,10 @@ def getResources(base_name, number, filenames=[]):
     name = re.search(r'(^[^.]*).', file_name).group(1)
     if len(filenames)>0:
         num = 0
-        for filename in sorted(filenames):
+        for filename in filenames:
             resources += f'''            <cmd:ResourceProxy id="p{num+1}">
                 <cmd:ResourceType>Resource</cmd:ResourceType>
-                <cmd:ResourceRef>/OUT/{path}/{filename}.jpg</cmd:ResourceRef>
+                <cmd:ResourceRef>/OUT/{filename}</cmd:ResourceRef>
             </cmd:ResourceProxy>
 '''
             num += 1
