@@ -26,7 +26,7 @@ def getHeader():
     </cmd:Header>
 '''
 
-def getResources(base_name, number):
+def getResources(base_name, number, filenames=[]):
     resources = '''    <cmd:Resources>
         <cmd:ResourceProxyList>
 '''
@@ -38,10 +38,20 @@ def getResources(base_name, number):
     path = os.path.dirname(base_name)
     file_name = os.path.basename(base_name)
     name = re.search(r'(^[^.]*).', file_name).group(1)
-    for num in range(number):
-        resources += f'''            <cmd:ResourceProxy id="p{num+1}">
+    if len(filenames)>0:
+        num = 0
+        for filename in sorted(filenames):
+            resources += f'''            <cmd:ResourceProxy id="p{num+1}">
                 <cmd:ResourceType>Resource</cmd:ResourceType>
-                <cmd:ResourceRef>/OUT/{path}_split/{name}-{num}.jpg</cmd:ResourceRef>
+                <cmd:ResourceRef>/OUT/{path}/{filename}.jpg</cmd:ResourceRef>
+            </cmd:ResourceProxy>
+'''
+            num += 1
+    else:
+        for num in range(number):
+            resources += f'''            <cmd:ResourceProxy id="p{num+1}">
+                <cmd:ResourceType>Resource</cmd:ResourceType>
+                <cmd:ResourceRef>/OUT/{path}/{name}-{num}.jpg</cmd:ResourceRef>
             </cmd:ResourceProxy>
 '''
     resources += '''        </cmd:ResourceProxyList>
@@ -80,9 +90,9 @@ def getComponents(base_name, number):
 def getFooter():
     return '</cmd:CMD>'
 
-def makeCmdi(base_name, number):
+def makeCmdi(base_name, number, filenames=[]):
     result = getHeader()
-    result += getResources(base_name, number)
+    result += getResources(base_name, number, filenames)
     result += getComponents(base_name, number)
     result += getFooter()
     return result
