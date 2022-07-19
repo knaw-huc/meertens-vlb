@@ -11,51 +11,11 @@ import re
 import shutil
 import sys
 
-def stderr(text,nl='\n'):
-    sys.stderr.write(f"{text}{nl}")
-
-def arguments():
-    ap = argparse.ArgumentParser(description="Convert multi page pdf's into single jpeg files and split the pages into left and right (if the page width is larger than the height)")
-    ap.add_argument('-d', '--inputdir',
-                    help="inputdir",
-                    default= "N7")
-#    ap.add_argument('-o', '--outputdir',
-#                    help="outputdir",
-#                    default="N7_split")
-    args = vars(ap.parse_args())
-    return args
-
-
-if __name__ == "__main__":
-    stderr(datetime.today().strftime("start: %H:%M:%S"))
-    args = arguments()
-    inputdir = args['inputdir']
-#    outputdir = args['outputdir']
-#    if inputdir != outputdir:
-#        if os.path.isdir(outputdir):
-#            shutil.rmtree(outputdir)
-#        os.mkdir(outputdir)
-
-    num_imgs = 0
-    allFiles = {}
-    all_files = glob.glob(inputdir + "/*.pdf")
-    for f in all_files:
-        basename = os.path.basename(f)
-        outputdir = basename.replace('.pdf','')
-        os.mkdir(outputdir)
-        img = Image(filename = f)
-        img_converted = img.convert('jpg')
-        basename = basename.replace('.pdf','.jpg')
-        img_converted.save(filename = f'{outputdir}/{basename}')
-        num_imgs = len(img_converted.sequence)
-    orig_filename = all_files[0]
-
-
+def split_left_right(basename,num_imgs,inputdir,outputdir):
     all_files = glob.glob(outputdir + "/*.jpg")
     number = 0
     split_files = []
-    basename = basename.replace('.jpg','')
-    logfile = open(f'{basename}.log')
+    logfile = open(f'{inputdir}/{basename}.log','w')
     for num in range(num_imgs):
         f = f'{outputdir}/{basename}-{num}.jpg'
         number += 1
@@ -70,7 +30,7 @@ if __name__ == "__main__":
         fileout = f.replace('.jpg','_links.jpg')
         img.save(filename = fileout)
         split_files.append(fileout)
-        stderr(fileout)
+        logfile.write(f'{fileout}\n')
         #
         img = Image(filename = f)
         half = int(img.width / 2)
@@ -78,11 +38,43 @@ if __name__ == "__main__":
         fileout = f.replace('.jpg','_rechts.jpg')
         img.save(filename = fileout)
         split_files.append(fileout)
-        stderr(fileout)
+        logfile.write(f'{fileout}\n')
     num_imgs = len(split_files)
-    basename = os.path.basename(orig_filename)
-    with open(re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
-        uitvoer.write(makeCmdi(orig_filename,num_imgs,split_files))
+    with open(f'{inputdir}/{basename}.xml','w') as uitvoer:
+        uitvoer.write(makeCmdi(basename,num_imgs,split_files))
+
+
+
+def stderr(text,nl='\n'):
+    sys.stderr.write(f"{text}{nl}")
+
+def arguments():
+    ap = argparse.ArgumentParser(description="Convert multi page pdf's into single jpeg files and split the pages into left and right (if the page width is larger than the height)")
+    ap.add_argument('-d', '--inputdir',
+                    help="inputdir",
+                    default= "N7")
+    args = vars(ap.parse_args())
+    return args
+
+
+if __name__ == "__main__":
+    stderr(datetime.today().strftime("start: %H:%M:%S"))
+    args = arguments()
+    inputdir = args['inputdir']
+    num_imgs = 0
+    allFiles = {}
+    all_files = glob.glob(inputdir + "/*.pdf")
+    for f in all_files:
+        basename = os.path.basename(f).replace('.pdf','')
+        outputdir = f"{inputdir}/{basename}"
+        if os.path.isdir(outputdir):
+            shutil.rmtree(outputdir)
+        os.mkdir(outputdir)
+        img = Image(filename = f)
+        img_converted = img.convert('jpg')
+        img_converted.save(filename = f'{outputdir}/{basename}.jpg')
+        num_imgs = len(img_converted.sequence)
+        split_left_right(basename,num_imgs,inputdir,outputdir)
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
 
