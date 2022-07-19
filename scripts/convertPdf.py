@@ -19,9 +19,9 @@ def arguments():
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
                     default= "N7")
-    ap.add_argument('-o', '--outputdir',
-                    help="outputdir",
-                    default="N7_split")
+#    ap.add_argument('-o', '--outputdir',
+#                    help="outputdir",
+#                    default="N7_split")
     args = vars(ap.parse_args())
     return args
 
@@ -30,17 +30,19 @@ if __name__ == "__main__":
     stderr(datetime.today().strftime("start: %H:%M:%S"))
     args = arguments()
     inputdir = args['inputdir']
-    outputdir = args['outputdir']
-    if inputdir != outputdir:
-        if os.path.isdir(outputdir):
-            shutil.rmtree(outputdir)
-        os.mkdir(outputdir)
+#    outputdir = args['outputdir']
+#    if inputdir != outputdir:
+#        if os.path.isdir(outputdir):
+#            shutil.rmtree(outputdir)
+#        os.mkdir(outputdir)
 
     num_imgs = 0
     allFiles = {}
     all_files = glob.glob(inputdir + "/*.pdf")
     for f in all_files:
         basename = os.path.basename(f)
+        outputdir = basename.replace('.pdf','')
+        os.mkdir(outputdir)
         img = Image(filename = f)
         img_converted = img.convert('jpg')
         basename = basename.replace('.pdf','.jpg')
@@ -53,12 +55,13 @@ if __name__ == "__main__":
     number = 0
     split_files = []
     basename = basename.replace('.jpg','')
+    logfile = open(f'{basename}.log')
     for num in range(num_imgs):
         f = f'{outputdir}/{basename}-{num}.jpg'
         number += 1
         img = Image(filename = f)
         if img.height>img.width:
-            stderr(f'{f} is single page?')
+            logfile.write(f'{f} is single page?\n')
             split_files.append(f)
             continue
         number += 1
