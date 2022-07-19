@@ -8,6 +8,7 @@ locale.setlocale(locale.LC_ALL, 'nl_NL')
 from makeCmdi import makeCmdi
 import os
 import re
+import shutil
 import sys
 
 def stderr(text,nl='\n'):
@@ -18,9 +19,9 @@ def arguments():
     ap.add_argument('-d', '--inputdir',
                     help="inputdir",
                     default= "VKvragenlijst23")
-    ap.add_argument('-o', '--outputdir',
-                    help="outputdir",
-                    default="VKvragenlijst23_split")
+#    ap.add_argument('-o', '--outputdir',
+#                    help="outputdir",
+#                    default="VKvragenlijst23_split")
     args = vars(ap.parse_args())
     return args
 
@@ -29,20 +30,24 @@ if __name__ == "__main__":
     stderr(datetime.today().strftime("start: %H:%M:%S"))
     args = arguments()
     inputdir = args['inputdir']
-    outputdir = args['outputdir']
-    if not os.path.isdir(outputdir):
-        os.mkdir(outputdir)
+#    outputdir = args['outputdir']
+#    if not os.path.isdir(outputdir):
+#        os.mkdir(outputdir)
 
     allFiles = {}
     all_files = glob.glob(inputdir + "/*.tif")
     for f in all_files:
         basename = os.path.basename(f)
+        outputdir = f"{inputdir}/{basename.replace('.tif','')}"
+        if os.path.isdir(outputdir):
+            shutil.rmtree(outputdir)
+        os.mkdir(outputdir)
         img = Image(filename = f)
         img_converted = img.convert('jpg')
         basename = basename.replace('.tif','.jpg')
         img_converted.save(filename = f'{outputdir}/{basename}')
         num_imgs = len(img_converted.sequence)
-        with open(re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
+        with open(inputdir + '/' + re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
             uitvoer.write(makeCmdi(f,num_imgs))
 
     stderr(datetime.today().strftime("einde: %H:%M:%S"))
