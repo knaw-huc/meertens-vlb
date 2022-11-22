@@ -61,12 +61,15 @@ def getResources(base_name, number, filenames=[]):
 def getComponents(base_name, number):
     path = os.path.dirname(base_name)
     file_name = os.path.basename(base_name)
-    name = re.search(r'(^[^.]*).', file_name).group(1)
+    try:
+        name = re.search(r'(^[^.]*)\.[^.]+$', file_name).group(1)
+    except:
+        name = file_name
     identifier = re.search(r'(^[^.]*).', file_name).group(1)
     components = f'''    <cmd:Components>
         <cmdp:Vragenlijst>
-            <cmdp:identifier>{path}<!-- directory --></cmdp:identifier>
-            <cmdp:aantalPaginas>{number}<!-- of 0 als we het niet weten--></cmdp:aantalPaginas>
+            <cmdp:identifier>{path}</cmdp:identifier>
+            <cmdp:aantalPaginas>0</cmdp:aantalPaginas>
             <cmdp:Scan cmd:ref="s">
                 <cmdp:identifier>{name}<!-- filename zonder extension --></cmdp:identifier>
                 <cmdp:aantalPaginas>{number}</cmdp:aantalPaginas>
@@ -74,7 +77,10 @@ def getComponents(base_name, number):
     for num in range(number):
         components += f'''                <cmdp:Pagina cmd:ref="p{num+1}">
                     <cmdp:nr>{num+1}</cmdp:nr>
-                    <!--<cmdp:type>als verwacht</cmdp:type>-->
+                    <cmdp:kloekeCode></cmdp:kloekeCode>
+                    <cmdp:inzending>0</cmdp:inzending>
+                    <cmdp:volgorde></cmdp:volgorde>
+                    <cmdp:type>als verwacht</cmdp:type>
                 </cmdp:Pagina>
 '''
 
