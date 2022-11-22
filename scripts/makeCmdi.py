@@ -71,7 +71,7 @@ def getComponents(base_name, number):
             <cmdp:identifier>{path}</cmdp:identifier>
             <cmdp:aantalPaginas>0</cmdp:aantalPaginas>
             <cmdp:Scan cmd:ref="s">
-                <cmdp:identifier>{name}<!-- filename zonder extension --></cmdp:identifier>
+                <cmdp:identifier>{name}</cmdp:identifier>
                 <cmdp:aantalPaginas>{number}</cmdp:aantalPaginas>
 '''
     for num in range(number):
