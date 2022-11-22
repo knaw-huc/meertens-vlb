@@ -34,13 +34,18 @@ def getResources(base_name, number, filenames=[]):
 '''
     path = os.path.dirname(base_name)
     file_name = os.path.basename(base_name)
-    name = re.search(r'(^[^.]*).', file_name).group(1)
+    #name = re.search(r'(^[^.]*).', file_name).group(1)
+    try:
+        name = re.search(r'(^[^.]*)\.[^.]+$', file_name).group(1)
+    except:
+        name = file_name
     if len(filenames)>0:
         num = 0
-        for filename in filenames:
+        for f in filenames:
+            filename = os.path.basename(f)
             resources += f'''            <cmd:ResourceProxy id="p{num+1}">
                 <cmd:ResourceType>Resource</cmd:ResourceType>
-                <cmd:ResourceRef>/OUT/{filename}</cmd:ResourceRef>
+                <cmd:ResourceRef>/OUT/{path}/{filename}</cmd:ResourceRef>
             </cmd:ResourceProxy>
 '''
             num += 1
