@@ -16,7 +16,8 @@ def split_left_right(basename,num_imgs,inputdir,outputdir):
     number = 0
     split_files = []
     logfile = open(f'{inputdir}/{basename}.log','w')
-    for num in range(num_imgs):
+    for n in range(num_imgs):
+        num = f'{n:03}'
         f = f'{outputdir}/{basename}-{num}.jpg'
         number += 1
         img = Image(filename = f)
@@ -72,7 +73,7 @@ if __name__ == "__main__":
         os.mkdir(outputdir)
         img = Image(filename = f)
         img_converted = img.convert('jpg')
-        img_converted.save(filename = f'{outputdir}/{basename}.jpg')
+        img_converted.save(filename = f'{outputdir}/{basename}-%03d.jpg')
         num_imgs = len(img_converted.sequence)
         split_left_right(basename,num_imgs,inputdir,outputdir)
 

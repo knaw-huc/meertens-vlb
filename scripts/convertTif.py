@@ -45,7 +45,7 @@ if __name__ == "__main__":
         img = Image(filename = f)
         img_converted = img.convert('jpg')
         basename = basename.replace('.tif','.jpg')
-        img_converted.save(filename = f'{outputdir}/{basename}')
+        img_converted.save(filename = f'{outputdir}/{basename}-%03d')
         num_imgs = len(img_converted.sequence)
         with open(inputdir + '/' + re.search(r'(^[^.]*).', os.path.basename(basename)).group(1)+'.xml','w') as uitvoer:
             uitvoer.write(makeCmdi(f,num_imgs))
