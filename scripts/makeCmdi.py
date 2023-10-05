@@ -63,7 +63,7 @@ def getResources(base_name, number, filenames=[]):
 '''
     return resources
 
-def getComponents(base_name, number):
+def getComponents(inputdir, base_name, number, filenames):
     path = os.path.dirname(base_name)
     file_name = os.path.basename(base_name)
     try:
@@ -73,14 +73,17 @@ def getComponents(base_name, number):
     identifier = re.search(r'(^[^.]*).', file_name).group(1)
     components = f'''    <cmd:Components>
         <cmdp:Vragenlijst>
-            <cmdp:identifier>{path}</cmdp:identifier>
+            <cmdp:identifier>{inputdir}</cmdp:identifier>
             <cmdp:aantalPaginas>0</cmdp:aantalPaginas>
+            <cmdp:Status>nog te doen</cmdp:Status>
             <cmdp:Scan cmd:ref="s">
-                <cmdp:identifier>{name}</cmdp:identifier>
+                <cmdp:id>{name}</cmdp:id>
                 <cmdp:aantalPaginas>{number}</cmdp:aantalPaginas>
 '''
     for num in range(number):
+        f_id = os.path.basename(filenames[num]).replace('.jpg','')
         components += f'''                <cmdp:Pagina cmd:ref="p{num+1}">
+                    <cmdp:id>{f_id}</cmdp:id>
                     <cmdp:nr>{num+1}</cmdp:nr>
                     <cmdp:kloekeCode></cmdp:kloekeCode>
                     <cmdp:inzending>0</cmdp:inzending>
@@ -98,10 +101,10 @@ def getComponents(base_name, number):
 def getFooter():
     return '</cmd:CMD>'
 
-def makeCmdi(base_name, number, filenames=[]):
+def makeCmdi(inputdir, base_name, number, filenames=[]):
     result = getHeader()
     result += getResources(base_name, number, filenames)
-    result += getComponents(base_name, number)
+    result += getComponents(inputdir, base_name, number, filenames)
     result += getFooter()
     return result
 

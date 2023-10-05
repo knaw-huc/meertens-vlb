@@ -42,7 +42,7 @@ def split_left_right(basename,num_imgs,inputdir,outputdir):
         logfile.write(f'{fileout}\n')
     num_imgs = len(split_files)
     with open(f'{inputdir}/{basename}.xml','w') as uitvoer:
-        uitvoer.write(makeCmdi(basename,num_imgs,split_files))
+        uitvoer.write(makeCmdi(inputdir,basename,num_imgs,split_files))
 
 
 
