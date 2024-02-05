@@ -26,7 +26,7 @@ def split_left_right(basename,num_imgs,inputdir,outputdir):
             split_files.append(f)
             continue
         number += 1
-        half = int(img.width / 2)
+        half = int(img.width * 0.6)
         img.crop(0, 0, half, img.height)
         fileout = f.replace('.jpg','_links.jpg')
         img.save(filename = fileout)
@@ -34,8 +34,8 @@ def split_left_right(basename,num_imgs,inputdir,outputdir):
         logfile.write(f'{fileout}\n')
         #
         img = Image(filename = f)
-        half = int(img.width / 2)
-        img.crop(half+1, 0, img.width, img.height)
+        half = int(img.width - half)
+        img.crop(half, 0, img.width, img.height)
         fileout = f.replace('.jpg','_rechts.jpg')
         img.save(filename = fileout)
         split_files.append(fileout)
